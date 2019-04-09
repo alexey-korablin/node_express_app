@@ -1,20 +1,31 @@
 const http = require('http');
+const fs = require('fs');
+
+function serverStaticFile(res, path, contetType, responseCode) {
+    if(!responseCode) { responseCode = 200; }
+    fs.readFile(__dirname + path, (err, data) => {
+        if(err) {
+            res.writeHead(500, {'Content-Type': 'text/plain'});
+            res.end('500 - Internal Error');
+        } else {
+            res.writeHead(responseCode, {'Content-Type': contetType});
+            res.end(data);
+        }
+    })
+}
 
 http.createServer((req, res) => {
     const path = req.url.replace(/\/?(?:\?.*)?$/, '');
     console.log(path);
     switch (path) {
         case '':
-            res.writeHead(200, {'Content-Type': 'text/plain'}) ;
-            res.end('Homepage');
+            serverStaticFile(res, '/public/home.html', 'text/plain');
             break;
         case '/about':
-            res.writeHead(200, {'Content-Type': 'text/plain'}) ;
-            res.end('About page');
+            serverStaticFile(res, '/public/about.html', 'text/plain');
             break;
         default:
-            res.writeHead(404, {'Content-Type': 'text/plain'}) ;
-            res.end('Not Found');
+            serverStaticFile(res, '/public/notfound.html', 'text/plain', 404);
             break;
     }
 }).listen(3053, () => console.log('Server running on port 3053'));
