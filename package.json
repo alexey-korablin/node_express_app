@@ -1,0 +1,32 @@
+{
+  "name": "node_express_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --exec babel-node meadowlark.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexey-korablin/node_express_app.git"
+  },
+  "keywords": [],
+  "author": "'Alexey_Korablin' <'Alexey_Korablin@epam.com'>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexey-korablin/node_express_app/issues"
+  },
+  "homepage": "https://github.com/alexey-korablin/node_express_app#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "@babel/core": "7.4.3",
+    "@babel/node": "7.2.2",
+    "@babel/preset-env": "7.4.3",
+    "@babel/preset-stage-2": "7.0.0",
+    "@babel/register": "7.4.0",
+    "nodemon": "1.18.11"
+  }
+}
