@@ -19,7 +19,8 @@
   },
   "homepage": "https://github.com/alexey-korablin/node_express_app#readme",
   "dependencies": {
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "express3-handlebars": "^0.5.2"
   },
   "devDependencies": {
     "@babel/core": "7.4.3",
