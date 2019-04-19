@@ -11,12 +11,33 @@ app.set('port', process.env.PORT || 3053);
 
 app.use(express.static(__dirname + '/public'));
 
+app.use((req, res, next) => {
+    // console.log(res.locals); // {}
+    // console.log(app.get('env')); // development
+    // console.log(req.query); // { test: '1' }
+    res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
+    // console.log(res.locals.showTests); // true
+    next();
+});
+
 app.get('/', (req, res) => {
     res.render('home');
 });
 
 app.get('/about', (req, res) => {
-    res.render('about', {fortune: fortune()});
+    res.render('about',
+        {
+            fortune: fortune(),
+            pageTestScript: '/qa/test-about.js'
+        });
+});
+
+app.get('/tours/hood-river', (req, res) => {
+    res.render('tours/hood-river');
+});
+
+app.get('/tours/request-group-rate', (req, res) => {
+    res.render('tours/request-group-rate');
 });
 
 // custom 404 page
@@ -35,6 +56,8 @@ app.use((err, req, res, next) => {
 app.listen(app.get('port'),
     () => console.log(`Express started on http://localhost:${app.get('port')} ; press Ctrl + C to terminate`));
 
+
+if (app.thing === null) { console.log('bleat!'); }
 
 // Help Section
 //
