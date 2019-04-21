@@ -24,6 +24,13 @@ app.get('/', (req, res) => {
     res.render('home');
 });
 
+app.get('/headers', (req, res) => {
+    res.set('Content-Type', 'text/plain');
+    let s = '';
+    for (let name in req.headers) { s += name + ': ' + req.headers[name] +  '\n';}
+    res.send(s);
+});
+
 app.get('/about', (req, res) => {
     res.render('about',
         {
