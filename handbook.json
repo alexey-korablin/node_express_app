@@ -1,0 +1,49 @@
+[
+    {
+        "theme": "request object",
+        "thesises": {
+            "common names": "req or request, can be any valid JS identifier",
+            "origination": "out of http.IncommingMessage it is the instance of nodejs core object"
+        },
+        "subjects": {
+            "req.params": "array. contains the named route parameters",
+            "req.param(name)": "returns named route parameter, or GET/POST params. RECOMMEND TO AVOID!",
+            "req.query": "contains querystring params as name/value pairs aka GET params",
+            "req.body": "contains POST params. To parse the body content need use middleware",
+            "req.route": "contains currently matched route. Uses mainly for debugging",
+            "req.cookies/req.signedCookies": "object. contains cookie passed from the client",
+            "req.headers": "headers received from the client",
+            "req.accepts[types]": "method. to determine whether the client accepts given type(s)",
+            "req.ip": "the client's IP address",
+            "req.path": "request path only",
+            "req.host": "method. get the client's hostname. !!!Should not be used for security purposes!!!",
+            "req.xhr": "property. true if origignates for AJAX",
+            "req.protocol": "used protocol",
+            "req.secure": "property. true if connetcions is secure",
+            "req.url/req.originalUrl": "properties. returns path and quesrystring. originalUrl returns the original request",
+            "req.acceptLanguages": "method. returns array of preferred languages. Comes from request header"
+        }
+    },
+    {
+        "theme": "response object",
+        "thesises": {
+            "common names": "res, resp or response, can be any valid JS identifier",
+            "origination": "out of http.ServerResponse it is the instance of nodejs core object"
+        },
+        "subjects": {
+            "res.status(code)": "sets HTTP status code. Default 200(OK). 404(Not Found), 500(Server Error) or any other should be specified. Not suitable for redirect status codes (30X)",
+            "res.set(name, value)": "sets a response header",
+            "res.cookie(name, value, [options]), res.clearCookies(name, [options])": "sets or clears cookies",
+            "res.redirect([status], url)": "redirects the browser. Default 302(Found). Other redirect codes should be specified",
+            "res.send(body), res.send(status, body)": "sends a response body with optional statuse code. Default content-type is text/html. If needs change content-type, before sending of body the header should be changed appropriately by using res.set() method",
+            "res.json(json), res.json(status, json)": "sends JSON. Status code is optional",
+            "res.jsonp(jsonp), res.jsonp(status, jsonp)": "sends JSONP. Status code is optional",
+            "res.type(type)": "sets the Content-Type header. Allow easelly sets a content type. F.e. res.type('text') will set header Content-Type: text/plain. Explicit setting is better!",
+            "res.format(object)": "allows send different content depending on the Accept request header. F.i. res.format({'text/plain': 'hi there', 'text/html': '<b>hi there</b>'})",
+            "res.attachment([filename]), res.download(path, [filename], [callback])": "set a response header called Content-Disposition to attachment. It is a way to say to a browser to download the content instead render it on a display. res.download - specify a file, res.attachment - sets the header",
+            "res.sendFile(path, [options], [callback])": "will read a file specified by path and send it content to the client",
+            "res.links(links)": "sets the Links response header. Little use",
+            "res.locals, res.render(view, [locals], callback)": "res.locals - object - contains default context for rendering views. res.render - renders view using the configured template engine. res.render don't set status code 200. It shoul be done manually by using res.status(code)"
+        }
+    }
+]
