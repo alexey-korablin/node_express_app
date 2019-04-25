@@ -45,5 +45,16 @@
             "res.links(links)": "sets the Links response header. Little use",
             "res.locals, res.render(view, [locals], callback)": "res.locals - object - contains default context for rendering views. res.render - renders view using the configured template engine. res.render don't set status code 200. It shoul be done manually by using res.status(code)"
         }
+    },
+    {
+        "theme": "handlebars",
+        "thesises": {},
+        "subjects": {
+            "comments": "{{! some comment}} // this kinde of comments never be shown at result html",
+            "blocks": "provides flow control, conditional execution, extensibility. {{#each data}} inner template {{/each}} - repeat some template with 'data' context. {{#if condition}} template ((/if}} - conditionally shows corresponded template. {{else}}alternative template{{/else}} - show alternative template, if main condition is falsy. {{../outerContext}} - moving up to outer context. 'if' and 'each' both are have optional 'else' block. {{#unless context}}Template{{/unless}} - will be executed when the 'context' is falsy. {{.}} - refer to the current context (could be used with #each). {{./foo}} - to get properties of 'foo' helper",
+            "usingNotes": "when handlebars required it needs initialize: .create({defaultLayout: 'main', extname: '.hbs'}). Here 'defaultLayout' - option to specify name of core layout which is 'main', 'extname' - name of extensions for template files. handlebars look for templates in views/layouts/*.handlebars. If layout is not need it can be rendered this way: res.render('foo', {layout: null}). If it needs to use different template (not default) it can be specified this way: res.render('foo', {layout: 'microsite'}) - template will be picked from views/layout/microsite.handlebars",
+            "partials": "{{> somePartial}} - the sign '>' tells handlebars that needs to use partials. Using subdirectories is supported - {{> somePartial/subdirectory}}",
+            "sections": "Custom realization. See meadowlark.js const handlebars = require('express3-handlebars').create(...)"
+        }
     }
 ]

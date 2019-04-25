@@ -1,5 +1,14 @@
 const express = require('express');
-const handlebars = require('express3-handlebars').create({ defaultLayout: 'main' });
+const handlebars = require('express3-handlebars').create({ 
+    defaultLayout: 'main' ,
+    helpers: {
+        section: function(name, option) {
+            if (!this._sections) { this._sections = {}; }
+            this._sections[name] = options.fn(this);
+            return null;
+        }
+    }
+});
 const fortune = require('./lib/fortune').getFortune;
 
 const app = express();
