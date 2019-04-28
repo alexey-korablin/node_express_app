@@ -19,8 +19,11 @@
   },
   "homepage": "https://github.com/alexey-korablin/node_express_app#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "express": "^4.16.4",
-    "express3-handlebars": "^0.5.2"
+    "express3-handlebars": "^0.5.2",
+    "formidable": "^1.2.1",
+    "jquery-file-upload-middleware": "^0.1.8"
   },
   "devDependencies": {
     "@babel/core": "7.4.3",

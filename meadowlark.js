@@ -4,11 +4,13 @@ const handlebars = require('express3-handlebars').create({
     helpers: {
         section: function(name, option) {
             if (!this._sections) { this._sections = {}; }
-            this._sections[name] = options.fn(this);
+            this._sections[name] = option.fn(this);
             return null;
         }
     }
 });
+const formidable = require('formidable');
+
 const fortune = require('./lib/fortune').getFortune;
 
 const app = express();
@@ -17,6 +19,8 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
 app.set('port', process.env.PORT || 3053);
+
+app.use(require('body-parser')());
 
 app.use(express.static(__dirname + '/public'));
 
@@ -46,6 +50,42 @@ app.get('/about', (req, res) => {
             fortune: fortune(),
             pageTestScript: '/qa/test-about.js'
         });
+});
+
+app.get('/newsletter', (req, res) => {
+    res.render('newsletter', { csrf: 'CSRF token goes here' });
+});
+
+app.post('/process', (req, res) => {
+    console.log(req.accepts('html'));
+    if (req.xhr || req.accepts('html') === 'html') {
+        res.send({ success: true });
+    } else {
+        console.log(`Form (from querystring): ${req.query.form}`);
+        console.log(`CSRF token (from hidden form field): ${req.body._csrf}`);
+        console.log(`Name (from visible form field): ${req.body.name}`);
+        console.log(`Email (from visible form field): ${req.body.email}`);
+        res.redirect(303, '/thank-you');
+    }
+});
+
+app.get('/contest/vacation-photo', (req, res) => {
+    const now = new Date();
+    res.render('contest/vacation-photo', {
+        year: now.getFullYear(), month: now.getMonth()
+    });
+});
+
+app.post('/contest/vacation-photo/:year/:month', (req, res) => {
+    const form = new formidable.IncomingForm();
+    form.parse(req, (err, fields, files) => {
+        if (err) { return res.redirect(303, '/error'); }
+        console.log('Received fields');
+        console.log(fields);
+        console.log('Received files');
+        console.log(files);
+        res.redirect(303, '/thank-you');
+    });
 });
 
 app.get('/tours/hood-river', (req, res) => {
