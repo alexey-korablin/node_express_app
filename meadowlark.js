@@ -10,6 +10,7 @@ const handlebars = require('express3-handlebars').create({
     }
 });
 const formidable = require('formidable');
+const jqupload = require('jquery-file-upload-middleware');
 
 const fortune = require('./lib/fortune').getFortune;
 
@@ -94,6 +95,14 @@ app.get('/tours/hood-river', (req, res) => {
 
 app.get('/tours/request-group-rate', (req, res) => {
     res.render('tours/request-group-rate');
+});
+
+app.use('/upload', (req, res, next) => {
+    const now = Date.now();
+    jqupload.fileHandler({
+        uploadDir: () => `${__dirname}/public/uploads/${now}`,
+        uploadUrl: () => `/uploads/${now}`
+    })(req, res, next);
 });
 
 // custom 404 page
