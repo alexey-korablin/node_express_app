@@ -56,5 +56,27 @@
             "partials": "{{> somePartial}} - the sign '>' tells handlebars that needs to use partials. Using subdirectories is supported - {{> somePartial/subdirectory}}",
             "sections": "Custom realization. See meadowlark.js const handlebars = require('express3-handlebars').create(...)"
         }
+    },
+    {
+        "theme": "setting cookies",
+        "thesises": {},
+        "subjects": {
+            "domain": "controls the domain the cookies associated with",
+            "path": "controls the path this cookies apply to. If path is '/' - the cookie will apply to all site, if '/foo' - will apply to foo page and all consequent pages",
+            "maxAge": "specifies how long the cookie will be alive (millisecs). When the option omits the cookie will be deleted right after browser will be closed",
+            "secure": "cookie sents only over HTTPS connection",
+            "httpOnly": "cookie will be modified only by the server. Prevent XSS attacks",
+            "signed": "set to true to sign this cookie. Makes it available in res.signedCookies. If cookies have been signed the server rejects any attemptions to temper them and set its original value"
+        }
+    },
+    {
+        "theme": "express-session",
+        "thesises": ["The middleware accepts the configuration object with options. Make setting cookies very simple"],
+        "subjects": {
+            "key": "the name of the cookie that will store the unique session identifier. Default - connect.sid",
+            "store": "An instance of a session store. Default - an instance of MemoryStore",
+            "cookie": "cookie settings for the session cookie (path, domain, secure, etc.)"
+            
+        }
     }
 ]

@@ -13,6 +13,9 @@ const formidable = require('formidable');
 const jqupload = require('jquery-file-upload-middleware');
 
 const fortune = require('./lib/fortune').getFortune;
+const creds = require('./credentials');
+
+const VALID_EMAIL_REGEX = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 const app = express();
 
@@ -22,6 +25,8 @@ app.set('view engine', 'handlebars');
 app.set('port', process.env.PORT || 3053);
 
 app.use(require('body-parser')());
+app.use(require('cookie-parser')(creds.cookieSecret));
+app.use(require('express-session')());
 
 app.use(express.static(__dirname + '/public'));
 
@@ -34,7 +39,14 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use((req, res, next) => {
+    res.locals.flash = req.session.flash;
+    delete req.session.flash;
+    next();
+});
+
 app.get('/', (req, res) => {
+    res.cookie('monster', 'nom nom');
     res.render('home');
 });
 
@@ -46,6 +58,7 @@ app.get('/headers', (req, res) => {
 });
 
 app.get('/about', (req, res) => {
+    res.cookie('signed_monster', 'nom nom', { signed: true });
     res.render('about',
         {
             fortune: fortune(),
@@ -55,6 +68,51 @@ app.get('/about', (req, res) => {
 
 app.get('/newsletter', (req, res) => {
     res.render('newsletter', { csrf: 'CSRF token goes here' });
+});
+
+class NewsletterSignup {
+    constructor(config) {
+        this.name = config.name;
+        this.email = config.email;
+    }
+
+    save() {
+        if (!(this.name && this.email)) {
+            return new Error('DB error');
+        }
+    }
+}
+
+app.post('/newsletter', (req, res) => {
+    const name = req.body.name || '';
+    const email = req.body.email || '';
+    if (!email.match(VALID_EMAIL_REGEX)) {
+        if (req.xhr) { return res.json({ error: 'Invalid name or email address' }); }
+        req.session.flash = {
+            type: 'danger',
+            intro: 'Validation error!',
+            message: 'The email address you entered was not valid'
+        };
+        return res.redirect(303, '/newsletter/archive');
+    }
+    new NewsletterSignup({name, email}).save((err) => {
+        if (err) {
+            if (req.xhr) { return res.json({ error: 'database error' }); }
+            req.session.flash = {
+                type: 'danger',
+                intro: 'Database error!',
+                message: 'There was a database error; please try again later.'
+            };
+            return res.redirect(303, '/newsletter/archive');
+        }
+        if (req.xhr) { return res.json({ success: true }); }
+        req.session.flash = {
+            type: 'success',
+            intro: 'Thank you!',
+            message: 'You have now been signed up for the newsletter.'
+        };
+        return res.redirect(303, '/newsletter/archive');
+    });
 });
 
 app.post('/process', (req, res) => {
@@ -138,3 +196,11 @@ if (app.thing === null) { console.log('bleat!'); }
 // |__ static middleware - allows to simple delivering it to the client. It might be put things like CSS, images and client-side JS
 
 // express.static(path, handler) - creates middleware to serve all files within specified directory
+
+// express-session
+// set cookie
+// req.session.userName = "Anonimous"
+// req.session.colorScheme = "dark"
+// delete cookie
+// delete req.session.colorScheme
+// All this operation performs only with request object! response object doesn't have the session property
