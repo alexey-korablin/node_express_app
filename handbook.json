@@ -78,5 +78,13 @@
             "cookie": "cookie settings for the session cookie (path, domain, secure, etc.)"
             
         }
+    },
+    {
+        "theme": "middleware",
+        "thesises": ["it is way to encapsulate functionality"],
+        "subjects": {
+            "middleware": "the function that takes three args: req obj, res obj and 'next' function",
+            "pipeline": "functionality to execute middleware in appropreate order. Pipelines pass the result execution of one middleware into next middleware"
+        }
     }
 ]
