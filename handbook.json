@@ -84,7 +84,9 @@
         "thesises": ["it is way to encapsulate functionality"],
         "subjects": {
             "middleware": "the function that takes three args: req obj, res obj and 'next' function",
-            "pipeline": "functionality to execute middleware in appropreate order. Pipelines pass the result execution of one middleware into next middleware"
+            "pipeline": "functionality to execute middleware in appropreate order. Pipelines pass the result execution of one middleware into next middleware. app.use() - add the middleware into the pipeline. The last middleware is so called 'catch all' handler it usually return 404 status code(Not Found). To terminate pipeline a middleware shouldn't call next() function",
+            "route handlers": "It is app.VERB f.i. app.get, app.post etc. To handle any HTTP verb use app.all(). Route handlers take some parameters. The first required parameter is path. The route whitch match any route is /*. Middleware also can take path as the first optional parameter. If it is omitted, it will match any path. Route handlers and middleware take a callback function that takes 2, 3 or 4 parameters. If 2 or 3 parameters - first two is req and res, third is next fn(). If 4 - the first is error object. If the next fn hasn't been called pipeline is terminated. Then middleware should send a response (res.send, res.json, res.remder, etc.) otherwise the client will hang. If send a response and call next fn() in the same time it will send the response to a client and pass data to the pipeline, but other sent responses will be ignored",
+            "route handler's first parameter": "It is required parameter"
         }
     }
 ]

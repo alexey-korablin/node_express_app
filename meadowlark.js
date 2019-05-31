@@ -14,6 +14,7 @@ const jqupload = require('jquery-file-upload-middleware');
 
 const fortune = require('./lib/fortune').getFortune;
 const creds = require('./credentials');
+const cartValidation = require('./lib/cartValidation');
 
 const VALID_EMAIL_REGEX = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
@@ -44,6 +45,9 @@ app.use((req, res, next) => {
     delete req.session.flash;
     next();
 });
+
+app.use(cartValidation.checkWaivers);
+app.use(cartValidation.checkGuestCounts);
 
 app.get('/', (req, res) => {
     res.cookie('monster', 'nom nom');
