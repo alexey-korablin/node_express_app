@@ -86,7 +86,29 @@
             "middleware": "the function that takes three args: req obj, res obj and 'next' function",
             "pipeline": "functionality to execute middleware in appropreate order. Pipelines pass the result execution of one middleware into next middleware. app.use() - add the middleware into the pipeline. The last middleware is so called 'catch all' handler it usually return 404 status code(Not Found). To terminate pipeline a middleware shouldn't call next() function",
             "route handlers": "It is app.VERB f.i. app.get, app.post etc. To handle any HTTP verb use app.all(). Route handlers take some parameters. The first required parameter is path. The route whitch match any route is /*. Middleware also can take path as the first optional parameter. If it is omitted, it will match any path. Route handlers and middleware take a callback function that takes 2, 3 or 4 parameters. If 2 or 3 parameters - first two is req and res, third is next fn(). If 4 - the first is error object. If the next fn hasn't been called pipeline is terminated. Then middleware should send a response (res.send, res.json, res.remder, etc.) otherwise the client will hang. If send a response and call next fn() in the same time it will send the response to a client and pass data to the pipeline, but other sent responses will be ignored",
-            "route handler's first parameter": "It is required parameter"
+            "route handler's first parameter": "It is required parameter",
+            "common middlewares": {
+                "preface": "Oftentimes middlewares should be bundled with Express. It needs to properly get middleware. The module 'connect' solve this problem. First, it needs to be installed 'npm i connect', then it should be availbale across the app: 'const connect = require('connect');'",
+                "basicAuth": "app.use(connect.basicAuth)(); Provides basic access authorization. Provides ONLY the basic security, prforms ONLY over HTTPS. This can be used only when needs smth very quick and easy and used HTTPS",
+                "body-parser": "app.use(require(body-parser)()); Parses request's body to JSON and urlencoded",
+                "json": "see body-parser. Parses JSON-encoded bodies. Needs if API expects JSON-encoded body",
+                "urlencoded": "Parses request bodies with media-type application/x-www-form-urlencoded. The Most common way to handle forms and AJAX request",
+                "multipart": "Deprecated!!! Use busboy or formidable",
+                "compress": "app.use(connect.compress); Compresses response data with gzip. Uses on slow conncections or sending to mobile. This should be linked before any responses. Debugging aor logging middlewares can be connected before",
+                "cookie-parser": "npm i cookie-parser; app.use(require('cookie-parser')(secret goes here)); Provides cookie support",
+                "cookie-session": "npm i cookie-session; app.use(require(cookie-session)()); Provides cookie-storage session support. Not so good solution. Should be connected after cookie-parser",
+                "express-session": "npm i express-session; app.use(require(express-session)()); Provides session ID stored in a cookie. Store ID in a memory, not suitable for production. Can be configured to use database",
+                "csurf": "npm i csurf; app.use(require(csurf)()); Provides protection from CSRF attacks. Uses sessuins, must be linked after express-session MDWR.",
+                "directory": "app.use(connect.directory()); Provides directory listing support for static files.",
+                "errorhandler": "npm i errorhandler; app.use(require(errorhandler)()); Provides stack trace and error messages to client. Not recommended for using in production",
+                "static-favicon": "npm i static-favicon; app.use(require(static-favicon)(path to the favicon)); Can be changed with favicon.ico in the root of a project. Provides better performance, allow name favicon file in different way. The MDWR should be registered very high in MDWR stack",
+                "morgan": "npm i morgan; app.use(require(morgan)()); Provides automated logging support",
+                "method-override": "npm i method-override; app.use(require(method-override)()); Provides support for the x-http-method-override request header.",
+                "query": "Parses the querystring and makes it available as the query property on the request object. Express adds it implicitly.",
+                "response-time": "npm i response-time; app.use(require(response-time)()); Adds the x-respone-time header to the response in msec. Using when do preformance tuning",
+                "static": "app.use(express.static(path to static files)()); Provides support for serving static (public) files. Can be linked multiple times",
+                "vhost": "npm i vhost; const vhost = require(vhost); Helps manage subdomains"
+            }
         }
     }
 ]
