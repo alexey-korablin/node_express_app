@@ -11,14 +11,59 @@ const handlebars = require('express3-handlebars').create({
 });
 const formidable = require('formidable');
 const jqupload = require('jquery-file-upload-middleware');
+const nodemailer = require('nodemailer');
 
 const fortune = require('./lib/fortune').getFortune;
 const creds = require('./credentials');
 const cartValidation = require('./lib/cartValidation');
+const emailService = require('./lib/email')(creds);
 
 const VALID_EMAIL_REGEX = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 const app = express();
+
+// Creating nodemailer instance aka "transport"
+const mailTransport = nodemailer.createTransport('SMTP', {
+    service: 'Gmail',
+    auth: {
+        user: creds.gmail.user,
+        pass: creds.gmail.password
+    }
+});
+// If nodemailer doesn't have an appropriate shortcut of email service it is possible to connect to SMTP server directly
+// In this case it is necessary  to specify smtp port:
+// const mailTransport = nodemailer.createTransport('SMTP', {
+//     service: 'smtp.meadowlarktravel.com',
+//     port: 465,
+//     auth: {
+//         user: creds.meadowlarkSmtp.user,
+//         pass: creds.meadowlarkSmtp.password
+//     }
+// });
+//
+// Sending mail
+// to send email to multiple recepients it's need to list them in 'to' property separated with commas
+// f.i.: to: 'rec1@exmpl.com, rec2@exmpl.com, rec3@exmpl.com, "Jane Customer" <jane@yahoo.com>'
+// mailTransport.sendMail({
+//     from: '"Meadowlark Travel" <info@meadowlarktravel.com>',
+//     to: 'somecustomer@gmail.com',
+//     subject: 'Your meadowlark travel tour',
+//     text: 'Thank you for booking your trip with Meadowlark Travel. We look forward to your visit!'
+// }, (err) => {
+//     if (err) { console.error('Unable to send email: ' + err); }
+// });
+// If needs to send email with html layout body it's important ot consider option to show plain text
+// when/if html couldn't be interpreted by client
+// The first option is pass to nodemailer both html and plain text options
+// The second and better way is pass only html option and allow nodemailer translate it to plain text
+// in case of failure. The option is: 
+//  generateTextFromHtml: true
+// Images can be added to email as links to image files (good way)
+// For testing purposes can be used localhost. In production the layout can look like that:
+//  <img src="//meadowlark.com/email/logo.png" alt="Meadowlark Travel">
+//
+// Sending email with emailService
+emailService.send('somecustomer@gmail.com', 'Hood river tours on sale today!', 'Get\'em while they\'re hot!');
 
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
@@ -157,6 +202,45 @@ app.get('/tours/hood-river', (req, res) => {
 
 app.get('/tours/request-group-rate', (req, res) => {
     res.render('tours/request-group-rate');
+});
+
+// !!! This render used twice. Normally will be shown only result of first render call.
+// In this case it isn't so. Providing a callback fn will prevent rendering, then the second 
+//  render will be shown
+app.post('/cart/checkout', (req, res) => {
+    const cart = req.session.cart;
+    if (!cart) {
+        next(new Error('Cart does not exist.'));
+    }
+    const name = req.body.name || '';
+    const email = req.body.email || '';
+    if (!email.match(VALID_EMAIL_REGEX)) {
+        res.next(new Error('Invalid email address'));
+    }
+    // assign a random cart ID; normally we would use a database ID here
+    cart.number = Math.random().toString().replace(/^0\.0*/, '');
+    cart.billing = {
+        name,
+        email
+    };
+    res.render('email/cart-thank-you', {
+        layout: null, // necessary to don't show the layout to client
+        cart
+    }, (err, html) => {
+        if (err) {
+            console.error('error in email template');
+        }
+        mailTransport.sendMail({
+            from: '"Meadowlark Travel" <info@meadowlarktravel.com>',
+            to: cart.billing.email,
+            subject: 'Thank you for book your trip with Meadowlark Travel.',
+            html,
+            generateTextFromHtml: true
+        }, (err) => {
+            if (err) { console.err('Unable to send confirmation' + err.stack); }
+        });
+    });
+    res.render('cart-thank-you', { cart });
 });
 
 app.use('/upload', (req, res, next) => {
