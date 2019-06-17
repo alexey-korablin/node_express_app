@@ -12,6 +12,7 @@ const handlebars = require('express3-handlebars').create({
 const formidable = require('formidable');
 const jqupload = require('jquery-file-upload-middleware');
 const nodemailer = require('nodemailer');
+const http = require('http');
 
 const fortune = require('./lib/fortune').getFortune;
 const creds = require('./credentials');
@@ -21,15 +22,19 @@ const emailService = require('./lib/email')(creds);
 const VALID_EMAIL_REGEX = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 const app = express();
+// To change mode perform in console this: export NODE_ENV=production
+http.createServer(app).listen(app.get('port'), 
+    () => console.log(`Express started in ${app.get('env')} mode on http://localhost:${app.get('port')}; Press Ctrl+C to terminate`));
 
 // Creating nodemailer instance aka "transport"
-const mailTransport = nodemailer.createTransport('SMTP', {
-    service: 'Gmail',
-    auth: {
-        user: creds.gmail.user,
-        pass: creds.gmail.password
-    }
-});
+// const mailTransport = nodemailer.createTransport('SMTP', {
+//     service: 'Gmail',
+//     auth: {
+//         user: creds.gmail.user,
+//         pass: creds.gmail.password
+//     }
+// });
+var mailTransport = nodemailer.createTransport("smtps://youruser%40gmail.com:"+encodeURIComponent('yourpass#123') + "@smtp.gmail.com:465");
 // If nodemailer doesn't have an appropriate shortcut of email service it is possible to connect to SMTP server directly
 // In this case it is necessary  to specify smtp port:
 // const mailTransport = nodemailer.createTransport('SMTP', {
@@ -264,8 +269,8 @@ app.use((err, req, res, next) => {
     res.render('500');
 });
 
-app.listen(app.get('port'),
-    () => console.log(`Express started on http://localhost:${app.get('port')} ; press Ctrl + C to terminate`));
+// app.listen(app.get('port'),
+    // () => console.log(`Express started on http://localhost:${app.get('port')} ; press Ctrl + C to terminate`));
 
 
 if (app.thing === null) { console.log('bleat!'); }
